@@ -59,6 +59,12 @@ PythonLSP.python_lsp_servers = {
       vim.cmd(":LspRestart SithLSP")
     end,
   },
+  ty = {
+    callback = function(_, client)
+      vim.notify_once(string.format("python.nvim: restart lsp client: '%s'", client.name), vim.log.levels.INFO)
+      vim.cmd(":LspRestart ty")
+    end,
+  },
   -- For my homies in devops
   ansiblels = {
     callback = function(_, client)
