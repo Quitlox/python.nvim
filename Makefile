@@ -21,13 +21,13 @@ lint-fix:
 
 # Install all test dependencies
 deps: deps/mini.nvim \
-			deps/nvim-dap \
-			deps/nvim-dap-python \
-			deps/nvim-lspconfig \
-			deps/LuaSnip \
-			deps/neotest \
-			deps/neotest-python \
-			deps/nvim-treesitter
+	deps/nvim-dap \
+	deps/nvim-dap-python \
+	deps/nvim-lspconfig \
+	deps/LuaSnip \
+	deps/neotest \
+	deps/neotest-python \
+	deps/nvim-treesitter
 
 test_requirements:
 	for req in "python3" "uv"; do \
@@ -40,7 +40,7 @@ test_requirements:
 deps/nvim-treesitter:
 	set -x
 	@mkdir -p deps
-	git clone --filter=blob:none https://github.com/nvim-treesitter/nvim-treesitter $@
+	git clone --branch master --filter=blob:none https://github.com/nvim-treesitter/nvim-treesitter $@
 
 deps/mini.nvim:
 	set -x
