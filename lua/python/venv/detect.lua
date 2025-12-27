@@ -4,6 +4,19 @@ local create = require("python.venv.create")
 local PythonVENVDetect = {}
 local IS_WINDOWS = vim.uv.os_uname().sysname == "Windows_NT"
 
+---Get the current working directory respecting the venv scope setting
+---@return string
+local function get_cwd()
+  local config = require("python.config")
+
+  if config.venv_scope == "tab" then
+    -- Use tab-local working directory if available, fall back to global cwd
+    return vim.fn.getcwd(-1, vim.api.nvim_get_current_tabpage())
+  else
+    return vim.fn.getcwd()
+  end
+end
+
 ---@class DetectVEnv
 ---@field dir string Current working directory found containing venv
 ---@field venv PythonStateVEnv information on the detected venv
@@ -36,7 +49,7 @@ end
 --- Check if cwd is current in state
 function DetectVEnv:found_in_cwd()
   local python_state = state.State()
-  local cwd = vim.fn.getcwd()
+  local cwd = get_cwd()
 
   -- set venv if cwd is found in state before doing searches.
   if python_state.venvs[cwd] ~= nil and vim.fn.isdirectory(python_state.venvs[cwd].venv_path) ~= 0 then
