@@ -30,6 +30,11 @@ PythonConfig.defaults = {
   -- Buffer patterns to activate commands for python.nvim
   command_setup_buf_pattern = { "*.py" },
 
+  -- Scope for virtual environment selection
+  -- 'global': One venv for the entire Neovim instance (default)
+  -- 'tab': Different venvs per tab (useful for tab-based workflows with :tcd)
+  venv_scope = "global",
+
   -- Load python.nvim python snippets
   python_lua_snippets = false,
 
