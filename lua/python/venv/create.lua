@@ -7,7 +7,8 @@ local PythonVENVCreate = {}
 ---Get the current working directory respecting the venv scope setting
 ---@return string
 local function get_cwd()
-  if config.venv_scope == "tab" then
+  local cfg = require("python.config")
+  if cfg.venv_scope == "tab" then
     -- Use tab-local working directory if available, fall back to global cwd
     return vim.fn.getcwd(-1, vim.api.nvim_get_current_tabpage())
   else
