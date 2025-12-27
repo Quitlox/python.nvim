@@ -110,7 +110,7 @@ return {
         { "nvim-neotest/neotest-python" },
     },
     ---@type python.Config
-    opts = { ---@diagnostic disable-line: missing-fields`
+    opts = { ---@diagnostic disable-line: missing-fields
         venv_scope = "tab"  -- Each tab can have its own virtual environment
     },
   }
