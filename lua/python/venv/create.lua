@@ -2,19 +2,8 @@ local config = require("python.config")
 local state = require("python.state")
 local interpreters = require("python.venv.interpreters")
 local ui = require("python.ui")
+local utils = require("python.venv.utils")
 local PythonVENVCreate = {}
-
----Get the current working directory respecting the venv scope setting
----@return string
-local function get_cwd()
-  local cfg = require("python.config")
-  if cfg.venv_scope == "tab" then
-    -- Use tab-local working directory if available, fall back to global cwd
-    return vim.fn.getcwd(-1, vim.api.nvim_get_current_tabpage())
-  else
-    return vim.fn.getcwd()
-  end
-end
 
 ---Remove venv from state by key
 ---@param venv_key string
@@ -456,7 +445,7 @@ end
 --- This is used when users manually select a venv and want it cached for next run.
 ---@param venv VEnv venv object to pull from
 function PythonVENVCreate.user_set_venv_in_state_confirmation(venv)
-  local cwd = get_cwd()
+  local cwd = utils.get_cwd()
   local python_state = state.State()
   vim.ui.select({ "Yes", "No" }, {
     prompt = string.format("Save env path for this cwd? '%s' -> '%s': ", cwd, venv.path),

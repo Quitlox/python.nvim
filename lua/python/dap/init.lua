@@ -4,17 +4,7 @@ local PythonDap = {}
 
 local state = require("python.state")
 local config = require("python.config")
-
----Get the current working directory respecting the venv scope setting
----@return string
-local function get_cwd()
-  if config.venv_scope == "tab" then
-    -- Use tab-local working directory if available, fall back to global cwd
-    return vim.fn.getcwd(-1, vim.api.nvim_get_current_tabpage())
-  else
-    return vim.fn.getcwd()
-  end
-end
+local utils = require("python.venv.utils")
 
 --- Get venv for DAP functions
 ---@return VEnv | nil venv
@@ -127,7 +117,7 @@ function PythonDap.python_dap_run()
       local dap = require("dap")
       dap_python.setup(vim.fs.joinpath(venv.path, "bin", "python3"), {})
       local python_state = state.State()
-      local cwd = get_cwd()
+      local cwd = utils.get_cwd()
       if python_state.dap[cwd] == nil then
         create_dap_config(cwd, venv, python_state)
       else

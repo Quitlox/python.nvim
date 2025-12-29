@@ -5,24 +5,12 @@
 
 local PythonVENV = {}
 
+local utils = require("python.venv.utils")
 local current_venv = nil
 local tab_venvs = {} -- Table to store venvs per tab: { [tabnr] = venv }
 
 local IS_WINDOWS = vim.uv.os_uname().sysname == "Windows_NT"
 local ORIGINAL_PATH = vim.fn.getenv("PATH")
-
----Get the current working directory respecting the venv scope setting
----@return string
-local get_cwd = function()
-  local config = require("python.config")
-
-  if config.venv_scope == "tab" then
-    -- Use tab-local working directory if available, fall back to global cwd
-    return vim.fn.getcwd(-1, vim.api.nvim_get_current_tabpage())
-  else
-    return vim.fn.getcwd()
-  end
-end
 
 local update_PATH = function(path)
   local sep
@@ -40,19 +28,11 @@ end
 ---Set active VEnv, updating venv and PATH variables.
 ---@param venv VEnv | nil
 function PythonVENV.set_venv_path(venv)
-  local config = require("python.config")
-
-  if config.venv_scope == "tab" then
-    local tabnr = vim.api.nvim_get_current_tabpage()
-    tab_venvs[tabnr] = venv
-  else
-    current_venv = venv
-  end
-
+  current_venv = utils.store_venv(venv, current_venv, tab_venvs)
   if venv == nil then
     return
   end
-
+  local config = require("python.config")
   if venv.source == "conda" or venv.source == "micromamba" then
     vim.fn.setenv("CONDA_PREFIX", venv.path)
     vim.fn.setenv("CONDA_DEFAULT_ENV", venv.name)
@@ -71,14 +51,7 @@ end
 ---Get the currently set VEnv object from plugin memory
 ---@return VEnv | nil
 function PythonVENV.current_venv()
-  local config = require("python.config")
-
-  if config.venv_scope == "tab" then
-    local tabnr = vim.api.nvim_get_current_tabpage()
-    return tab_venvs[tabnr]
-  else
-    return current_venv
-  end
+  return utils.get_venv(current_venv, tab_venvs)
 end
 
 ---@return VEnv[]
@@ -105,7 +78,7 @@ local get_venvs_for = function(base_path, source, opts)
 end
 
 local get_pixi_base_path = function()
-  local current_dir = get_cwd()
+  local current_dir = utils.get_cwd()
   local pixi_root = vim.fs.joinpath(current_dir, ".pixi")
 
   if vim.fn.filereadable(pixi_root) == 0 then
@@ -192,7 +165,6 @@ end
 
 ---Load in a venv that is already set in env vars.
 PythonVENV.load_existing_venv = function()
-  local config = require("python.config")
   local venv
 
   local venv_env = vim.fn.getenv("VIRTUAL_ENV")
@@ -214,12 +186,7 @@ PythonVENV.load_existing_venv = function()
   end
 
   if venv then
-    if config.venv_scope == "tab" then
-      local tabnr = vim.api.nvim_get_current_tabpage()
-      tab_venvs[tabnr] = venv
-    else
-      current_venv = venv
-    end
+    current_venv = utils.store_venv(venv, current_venv, tab_venvs)
   end
 end
 
