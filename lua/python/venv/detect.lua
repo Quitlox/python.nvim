@@ -1,5 +1,6 @@
 local state = require("python.state")
 local create = require("python.venv.create")
+local utils = require("python.venv.utils")
 
 local PythonVENVDetect = {}
 local IS_WINDOWS = vim.uv.os_uname().sysname == "Windows_NT"
@@ -36,7 +37,7 @@ end
 --- Check if cwd is current in state
 function DetectVEnv:found_in_cwd()
   local python_state = state.State()
-  local cwd = vim.fn.getcwd()
+  local cwd = utils.get_cwd()
 
   -- set venv if cwd is found in state before doing searches.
   if python_state.venvs[cwd] ~= nil and vim.fn.isdirectory(python_state.venvs[cwd].venv_path) ~= 0 then

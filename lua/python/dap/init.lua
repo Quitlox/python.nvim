@@ -3,6 +3,8 @@
 local PythonDap = {}
 
 local state = require("python.state")
+local config = require("python.config")
+local utils = require("python.venv.utils")
 
 --- Get venv for DAP functions
 ---@return VEnv | nil venv
@@ -115,7 +117,7 @@ function PythonDap.python_dap_run()
       local dap = require("dap")
       dap_python.setup(vim.fs.joinpath(venv.path, "bin", "python3"), {})
       local python_state = state.State()
-      local cwd = vim.fn.getcwd()
+      local cwd = utils.get_cwd()
       if python_state.dap[cwd] == nil then
         create_dap_config(cwd, venv, python_state)
       else

@@ -5,7 +5,9 @@
 
 local PythonVENV = {}
 
+local utils = require("python.venv.utils")
 local current_venv = nil
+local tab_venvs = {} -- Table to store venvs per tab: { [tabnr] = venv }
 
 local IS_WINDOWS = vim.uv.os_uname().sysname == "Windows_NT"
 local ORIGINAL_PATH = vim.fn.getenv("PATH")
@@ -26,8 +28,8 @@ end
 ---Set active VEnv, updating venv and PATH variables.
 ---@param venv VEnv | nil
 function PythonVENV.set_venv_path(venv)
+  current_venv = utils.store_venv(venv, current_venv, tab_venvs)
   if venv == nil then
-    current_venv = venv
     return
   end
   local config = require("python.config")
@@ -39,7 +41,6 @@ function PythonVENV.set_venv_path(venv)
   else
     vim.fn.setenv("VIRTUAL_ENV", venv.path)
   end
-  current_venv = venv
   -- TODO: remove old path
   update_PATH(venv.path)
   if config.post_set_venv then
@@ -50,7 +51,7 @@ end
 ---Get the currently set VEnv object from plugin memory
 ---@return VEnv | nil
 function PythonVENV.current_venv()
-  return current_venv
+  return utils.get_venv(current_venv, tab_venvs)
 end
 
 ---@return VEnv[]
@@ -77,7 +78,7 @@ local get_venvs_for = function(base_path, source, opts)
 end
 
 local get_pixi_base_path = function()
-  local current_dir = vim.fn.getcwd()
+  local current_dir = utils.get_cwd()
   local pixi_root = vim.fs.joinpath(current_dir, ".pixi")
 
   if vim.fn.filereadable(pixi_root) == 0 then
@@ -185,7 +186,7 @@ PythonVENV.load_existing_venv = function()
   end
 
   if venv then
-    current_venv = venv
+    current_venv = utils.store_venv(venv, current_venv, tab_venvs)
   end
 end
 

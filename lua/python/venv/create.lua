@@ -2,6 +2,7 @@ local config = require("python.config")
 local state = require("python.state")
 local interpreters = require("python.venv.interpreters")
 local ui = require("python.ui")
+local utils = require("python.venv.utils")
 local PythonVENVCreate = {}
 
 ---Remove venv from state by key
@@ -444,7 +445,7 @@ end
 --- This is used when users manually select a venv and want it cached for next run.
 ---@param venv VEnv venv object to pull from
 function PythonVENVCreate.user_set_venv_in_state_confirmation(venv)
-  local cwd = vim.fn.getcwd()
+  local cwd = utils.get_cwd()
   local python_state = state.State()
   vim.ui.select({ "Yes", "No" }, {
     prompt = string.format("Save env path for this cwd? '%s' -> '%s': ", cwd, venv.path),

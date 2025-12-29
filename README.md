@@ -94,6 +94,32 @@ return {
 }
 ```
 
+**Tab-based workflow** - useful for working on multiple projects in different tabs
+
+```lua
+return {
+  ---@module 'python'
+  {
+    "joshzcold/python.nvim",
+    dependencies = {
+        { "mfussenegger/nvim-dap" },
+        { "mfussenegger/nvim-dap-python" },
+        { "neovim/nvim-lspconfig" },
+        { "L3MON4D3/LuaSnip" },
+        { "nvim-neotest/neotest" },
+        { "nvim-neotest/neotest-python" },
+    },
+    ---@type python.Config
+    opts = { ---@diagnostic disable-line: missing-fields
+        venv_scope = "tab"  -- Each tab can have its own virtual environment
+    },
+  }
+}
+```
+
+> With `venv_scope = "tab"`, each tab can have its own virtual environment. 
+> This is useful when using `:tcd` to set different working directories per tab for different projects.
+
 </details>
 
 <details>
@@ -145,6 +171,11 @@ return {
 
     -- Buffer patterns to activate commands for python.nvim
     command_setup_buf_pattern = { "*.py" },
+
+    -- Scope for virtual environment selection
+    -- 'global': One venv for the entire Neovim instance (default)
+    -- 'tab': Different venvs per tab (useful for tab-based workflows with :tcd)
+    venv_scope = "global",
 
     -- Load python.nvim python snippets
     python_lua_snippets = false,
@@ -242,6 +273,11 @@ return {
   - [x] Lot of commands to control venvs
 
 - [x] Keep track of envs/pythons per project in state
+
+- [x] Support for tab-based workflows
+
+  - [x] Option to scope virtual environments per tab (with `:tcd` support)
+  - [x] Each tab can have its own virtual environment when `venv_scope = "tab"`
 
 - [x] Easier setup of python debugging
 
